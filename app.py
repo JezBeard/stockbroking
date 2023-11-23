@@ -22,59 +22,62 @@ def main():
     if 'text' not in st.session_state:
         st.session_state['text'] = ""
 
-    #st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
     st.header("Chat to a Document 💬👨🏻‍💻🤖")
-
-    index_name = "stockbroking"
     
-    # Paste text or URL
-    text_or_url = st.text_area("Paste your text or URL here: URLS must be in format https://")
-    process_button = st.button("Process Text")
-    store_name = "pasted_text_or_url"
-    
-    if process_button:
-        if text_or_url:
-            # Check if it's a URL
-            if text_or_url.startswith('http://') or text_or_url.startswith('https://'):
-                # It's a URL, fetch the content
-                response = requests.get(text_or_url)
+    # Add a radio button for the user to select the input method
+    input_method = st.radio("Choose your input method:", ("Paste text or web address", "Ask a question about the documents in the index"))
 
-                # Check if it's a HTML page
-                if 'text/html' in response.headers['Content-Type']:
-                    # Parse the HTML content with BeautifulSoup
-                    soup = BeautifulSoup(response.content, 'html.parser')
-                    # Extract all paragraph texts
-                    text = ' '.join(p.get_text() for p in soup.find_all('p'))
-                    st.text_area("**Fetched Information from site:  Note that some websites block content access so the fetched information may be limited**", text)  # Display the fetched information in a text box
+    if input_method == "Paste text or web address":
+        # Paste text or URL
+        text_or_url = st.text_area("Paste your text or URL here: URLS must be in format https://")
+        process_button = st.button("Process Text")
+        store_name = "pasted_text_or_url"
+        
+        if process_button:
+            if text_or_url:
+                # Check if it's a URL
+                if text_or_url.startswith('http://') or text_or_url.startswith('https://'):
+                    # It's a URL, fetch the content
+                    response = requests.get(text_or_url)
+
+                    # Check if it's a HTML page
+                    if 'text/html' in response.headers['Content-Type']:
+                        # Parse the HTML content with BeautifulSoup
+                        soup = BeautifulSoup(response.content, 'html.parser')
+                        # Extract all paragraph texts
+                        text = ' '.join(p.get_text() for p in soup.find_all('p'))
+                        st.text_area("**Fetched Information from site:  Note that some websites block content access so the fetched information may be limited**", text)  # Display the fetched information in a text box
+                    else:
+                        # It's not a HTML page, just use the raw content
+                        text = response.text
+                        st.text_area("Fetched Information:", text)  # Display the fetched information in a text box
+
+                    store_name = "fetched_url_content"
                 else:
-                    # It's not a HTML page, just use the raw content
-                    text = response.text
-                    st.text_area("Fetched Information:", text)  # Display the fetched information in a text box
+                    # It's not a URL, just use the pasted text
+                    text = text_or_url
+                    store_name = "pasted_text"
+                st.session_state['text'] = text  # Store the text in the session state
 
-                store_name = "fetched_url_content"
-            else:
-                # It's not a URL, just use the pasted text
-                text = text_or_url
-                store_name = "pasted_text"
-            st.session_state['text'] = text  # Store the text in the session state
+        # Check if text is provided
+        if not st.session_state['text']:  # Use the text from the session state
+            st.error("Please provide some text either by uploading a document or pasting text.")
+            return
 
-    # Check if text is provided
-    if not st.session_state['text']:  # Use the text from the session state
-        st.error("Please provide some text either by uploading a document or pasting text.")
-        return
+        # Process the pasted text
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=350,
+            chunk_overlap=50,
+            length_function=len
+        )
+        chunks = text_splitter.split_text(text=st.session_state['text'])  # Use the text from the session state
 
-    # Process the pasted text
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=350,
-        chunk_overlap=50,
-        length_function=len
-    )
-    chunks = text_splitter.split_text(text=st.session_state['text'])  # Use the text from the session state
+        vector_index = pinecone.Index(index_name)
+        vectors = embeddings.embed(chunks)  # Assuming `embeddings.embed` returns a list of vectors
+        vector_index.upsert(vectors)
 
-    vector_index = pinecone.Index(index_name)
-    vectors = embeddings.embed(chunks)  # Assuming `embeddings.embed` returns a list of vectors
-    vector_index.upsert(vectors)
-
+    # Ask a question about the documents in the index
     query = st.text_input("Ask question's about your document:")
 
     suggestions = ["", "What is the main topic of the document?", "Summarize the document in 200 words?", "Provide a bullet point list of the key points mentioned in the document?", "Create the headings and subheadings for Powerpoint slides", "Translate the first paragraph to French"]
