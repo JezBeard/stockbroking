@@ -27,7 +27,7 @@ embeddings = OpenAIEmbeddings()
 
 embed_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
-index_name = 'stock3'
+index_name = 'stock4'
 
 # Create an instance of pinecone.Index
 index = pinecone.Index(index_name)
