@@ -15,6 +15,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import os
 import openai
 import time
+import pinecone
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
