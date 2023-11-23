@@ -20,6 +20,9 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 embeddings = OpenAIEmbeddings()
 
+# Initialize the vector store object
+vectorstore = Pinecone(index_name, embed_model.embed_documents, "text")
+
 def main():
     if 'text' not in st.session_state:
         st.session_state['text'] = ""
@@ -86,15 +89,29 @@ def main():
 
     suggestion = st.selectbox("Or select a suggestion: (ENSURE QUESTION FIELD ABOVE IS BLANK)", suggestions, index=0)
 
-    if query:
-        query_vector = embeddings.embed([query])[0]  # Assuming `embeddings.embed` returns a list of vectors
-        results = vector_index.query(queries=[query_vector], top_k=3)
-        docs = [chunks[i] for i in results.ids[0]]  # Assuming `results.ids[0]` is a list of indices
+    if query or suggestion:
+        if suggestion:
+            query = suggestion
+
+        # Get top 3 results from the vector store
+        results = vectorstore.similarity_search(query, k=3)
+
+        # Get the text from the results
+        source_knowledge = "\n".join([x.page_content for x in results])
+
+        # Feed into an augmented prompt
+        augmented_prompt = f"""Using the contexts below, answer the query.
+
+        Contexts:
+        {source_knowledge}
+
+        Query: {query}"""
+
         llm = ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], model_name='gpt-3.5-turbo', max_tokens=2000, temperature=0.5)
         chain = load_qa_chain(llm=llm, chain_type="stuff")
         with get_openai_callback() as cb, st.spinner('Working on response...'):
             time.sleep(3)
-            response = chain.run(input_documents=docs, question=query)
+            response = chain.run(input_documents=[augmented_prompt], question=query)
             print(cb)
         st.write(response)
 
