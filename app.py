@@ -21,7 +21,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 embeddings = OpenAIEmbeddings()
 
 # Initialize the vector store object
-vectorstore = Pinecone(index_name, embed_model.embed_documents, "text")
+vectorstore = Pinecone(index_name, embed_model.embed_documents, "stockbroking")
 
 def main():
     if 'text' not in st.session_state:
