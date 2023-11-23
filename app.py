@@ -18,6 +18,8 @@ import time
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+embeddings = OpenAIEmbeddings()
+
 def main():
     if 'text' not in st.session_state:
         st.session_state['text'] = ""
