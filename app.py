@@ -21,6 +21,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Set the Pinecone API key
 pinecone.api_key = st.secrets["PINECONE_API_KEY"]
+environment=os.environ.get('PINECONE_ENVIRONMENT') or 'northamerica-northeast1-gcp'
 
 embeddings = OpenAIEmbeddings()
 
