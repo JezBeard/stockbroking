@@ -17,8 +17,6 @@ import openai
 import time
 import pinecone
 
-import pinecone
-
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 pinecone.init(api_key=st.secrets["Pinecone"]["api_key"])
