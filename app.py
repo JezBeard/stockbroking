@@ -126,10 +126,9 @@ def main():
 
     #st.write(f'{store_name}')
 
-    embeddings = OpenAIEmbeddings()
-    VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
-    with open(f"{store_name}.pkl", "wb") as f:
-        pickle.dump(VectorStore, f)
+    vector_index = pinecone.Index(index_name)
+    vectors = embeddings.embed(chunks)  # Assuming `embeddings.embed` returns a list of vectors
+    vector_index.upsert(vectors)
 
     query = st.text_input("Ask question's about your document:")
 
@@ -138,7 +137,9 @@ def main():
     suggestion = st.selectbox("Or select a suggestion: (ENSURE QUESTION FIELD ABOVE IS BLANK)", suggestions, index=0)
 
     if query:
-        docs = VectorStore.similarity_search(query=query, k=3)
+        query_vector = embeddings.embed([query])[0]  # Assuming `embeddings.embed` returns a list of vectors
+        results = vector_index.query(queries=[query_vector], top_k=3)
+        docs = [chunks[i] for i in results.ids[0]]  # Assuming `results.ids[0]` is a list of indices
         llm = ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], model_name='gpt-3.5-turbo', max_tokens=2000, temperature=0.5)
         chain = load_qa_chain(llm=llm, chain_type="stuff")
         with get_openai_callback() as cb, st.spinner('Working on response...'):
@@ -149,7 +150,9 @@ def main():
 
     elif suggestion:
         query = suggestion
-        docs = VectorStore.similarity_search(query=query, k=3)
+        query_vector = embeddings.embed([query])[0]  # Assuming `embeddings.embed` returns a list of vectors
+        results = vector_index.query(queries=[query_vector], top_k=3)
+        docs = [chunks[i] for i in results.ids[0]]  # Assuming `results.ids[0]` is a list of indices
         llm = ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], model_name='gpt-3.5-turbo', max_tokens=2000, temperature=0.5)
         chain = load_qa_chain(llm=llm, chain_type="stuff")
         with get_openai_callback() as cb, st.spinner('Working on response...'):
