@@ -29,7 +29,7 @@ index_name = "stockbroking"
 index = pinecone.Index(index_name)
 
 # Initialize the vector store object
-vectorstore = Pinecone(index_name, embed_model.embed_documents, "text")
+vectorstore = Pinecone(index, embed_model.embed_documents, "text")
 
 def main():
     if 'text' not in st.session_state:
