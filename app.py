@@ -22,7 +22,7 @@ def main():
     if 'text' not in st.session_state:
         st.session_state['text'] = ""
 
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+    #st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
     st.header("Chat to a Document 💬👨🏻‍💻🤖")
 
     index_name = "stockbroking"
