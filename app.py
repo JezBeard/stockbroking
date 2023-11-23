@@ -20,7 +20,7 @@ import pinecone
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Set the Pinecone API key
-pinecone.api_key = st.secrets["Pinecone"]
+pinecone.api_key = st.secrets["PINECONE_API_KEY"]
 
 embeddings = OpenAIEmbeddings()
 
