@@ -26,7 +26,7 @@ embed_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 # Create an instance of pinecone.Index
 index = pinecone.Index(index_name)
 
-index_name = stockbroking
+index_name = "stockbroking"
 
 # Initialize the vector store object
 vectorstore = Pinecone(index_name, embed_model.embed_documents, "text")
