@@ -21,13 +21,13 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Set the Pinecone API key
 pinecone.api_key = st.secrets["PINECONE_API_KEY"]
-environment=os.environ.get('PINECONE_ENVIRONMENT') or 'northamerica-northeast1-gcp'
+pinecone.environment = st.secrets["PINECONE_ENVIRONMENT"]
 
 embeddings = OpenAIEmbeddings()
 
 embed_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
-index_name = 'stock2'
+index_name = 'stock3'
 
 # Create an instance of pinecone.Index
 index = pinecone.Index(index_name)
