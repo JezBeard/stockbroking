@@ -3,7 +3,7 @@ import pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
 from langchain.chat_models import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain
+from langchain.chains.question_answering import load_qa_chain, RetrievalQA
 from langchain.callbacks import get_openai_callback
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import openai
@@ -25,6 +25,12 @@ index = pinecone.Index(index_name)
 # Initialize the vector store object
 vectorstore = Pinecone(index, embed_model.embed_documents, "text")
 
+def parse_response(response):
+    st.write(response['result'])
+    st.write('\n\nSources:')
+    for source_name in response["source_documents"]:
+        st.write(source_name.metadata['source'], "page #:", source_name.metadata['page'])
+
 def main():
     st.header("Chat to a Document 💬👨🏻‍💻🤖")
 
@@ -39,30 +45,14 @@ def main():
         if suggestion:
             query = suggestion
 
-        # Generate the query vector
-        query_vector = embed_model.embed([query])[0]  # Assuming `embed_model.embed` returns a list of vectors
-
-        # Get top 3 results from the vector store
-        results = vectorstore.similarity_search(query, k=3)
-
-        # Get the text from the results
-        source_knowledge = "\n".join([x.page_content for x in results])
-
-        # Feed into an augmented prompt
-        augmented_prompt = f"""Using the contexts below, answer the query.
-
-        Contexts:
-        {source_knowledge}
-
-        Query: {query}"""
-
         llm = ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], model_name='gpt-3.5-turbo', max_tokens=2000, temperature=0.5)
-        chain = load_qa_chain(llm=llm, chain_type="stuff")
-        with get_openai_callback() as cb, st.spinner('Working on response...'):
-            time.sleep(3)
-            response = chain.run(input_documents=[augmented_prompt], question=query)
-            print(cb)
-        st.write(response)
+        retriever = vectorstore.as_retriever(include_metadata=True, metadata_key = 'source')
+        qa_chain = RetrievalQA.from_chain_type(llm=llm, 
+                                          chain_type="stuff", 
+                                          retriever=retriever, 
+                                          return_source_documents=True)
+        response = qa_chain(query)
+        parse_response(response)
 
 if __name__ == '__main__':
     main()
