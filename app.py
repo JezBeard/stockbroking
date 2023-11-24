@@ -21,7 +21,7 @@ embed_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 index_name = 'stocks6'
 
 # Create an instance of pinecone.Index
-#index = pinecone.Index(index_name)
+index = pinecone.Index(index_name)
 
 # Initialize the vector store object
 vectorstore = Pinecone(index, embed_model.embed_documents, "text")
@@ -47,7 +47,7 @@ def main():
             query = suggestion
 
         llm = ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], model_name='gpt-3.5-turbo', max_tokens=2000, temperature=0.5)
-        retriever = vectorstore.as_retriever(include_metadata=True, metadata_key = 'source')
+        retriever = docsearch.as_retriever(include_metadata=True, metadata_key = 'source')
         qa_chain = RetrievalQA.from_chain_type(llm=llm, 
                                           chain_type="stuff", 
                                           retriever=retriever, 
