@@ -23,6 +23,8 @@ index_name = 'stocks6'
 # Create an instance of pinecone.Index
 index = pinecone.Index(index_name)
 
+docsearch = Pinecone.from_existing_index(index_name, embeddings)
+
 # Initialize the vector store object
 vectorstore = Pinecone(index, embed_model.embed_documents, "text")
 
