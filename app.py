@@ -24,7 +24,7 @@ index_name = 'stocks6'
 #index = pinecone.Index(index_name)
 
 # Initialize the vector store object
-#vectorstore = Pinecone(index, embed_model.embed_documents, "text")
+vectorstore = Pinecone(index, embed_model.embed_documents, "text")
 
 def parse_response(response):
     st.write(response['result'])
