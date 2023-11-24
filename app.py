@@ -39,6 +39,9 @@ def main():
         if suggestion:
             query = suggestion
 
+        # Generate the query vector
+        query_vector = embed_model.embed([query])[0]  # Assuming `embed_model.embed` returns a list of vectors
+
         # Get top 3 results from the vector store
         results = vectorstore.similarity_search(query, k=3)
 
