@@ -3,7 +3,8 @@ import pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
 from langchain.chat_models import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain, RetrievalQA
+from langchain.chains.question_answering import load_qa_chain
+from langchain.chains import RetrievalQA
 from langchain.callbacks import get_openai_callback
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import openai
