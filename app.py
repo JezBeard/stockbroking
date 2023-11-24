@@ -23,6 +23,8 @@ index_name = 'stocks6'
 # Create an instance of pinecone.Index
 index = pinecone.Index(index_name)
 
+embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+
 docsearch = Pinecone.from_existing_index(index_name, embeddings)
 
 # Initialize the vector store object
