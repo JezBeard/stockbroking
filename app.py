@@ -28,7 +28,7 @@ embeddings = OpenAIEmbeddings()
 docsearch = Pinecone.from_existing_index(index_name, embeddings)
 
 # Initialize the vector store object
-vectorstore = Pinecone(index, embed_model.embed_documents, "text")
+vectorstore = Pinecone(index, embed_model, "text")
 
 def parse_response(response):
     st.write(response['result'])
