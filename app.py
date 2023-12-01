@@ -42,7 +42,7 @@ def main():
     # Ask a question about the documents in the index
     query = st.text_input("Ask question's about ASX Quarterly Activites Reports : Note the current available test documents are Aurora Energy, Morella Corporation and Alpha HPA")
 
-    suggestions = ["", "Provide an overview of the Morella ASX announcement.", "What are the highlights of the Aurora Energy Quarterly Report?", "Provide a bullet point list of the key points mentioned in the Alpha HPA report"]
+    suggestions = ["", "Create a markdown table of the Aurora Energy tenements", "Provide an overview of the Morella ASX announcement.", "What are the highlights of the Aurora Energy Quarterly Report?", "Provide a bullet point list of the key points mentioned in the Alpha HPA report"]
 
     suggestion = st.selectbox("Or select a suggestion: (ENSURE QUESTION FIELD ABOVE IS BLANK)", suggestions, index=0)
 
