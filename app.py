@@ -37,10 +37,10 @@ def parse_response(response):
         st.write(source_name.metadata['source'], "page #:", source_name.metadata['page'])
 
 def main():
-    st.header("AI ASX Documents chat 💬👨🏻‍💻🤖")
+    st.header("AI ASX Documents chat 💬 🤖")
 
     # Ask a question about the documents in the index
-    query = st.text_input("Ask question's about ASX Quarterly Activites Reports :")
+    query = st.text_input("Ask question's about ASX Quarterly Activites Reports : Note the current available test documents are Aurora Energy, Morella Corporation and Alpha HPA")
 
     suggestions = ["", "Provide an overview of the Morella ASX announcement.", "What are the highlights of the Aurora Energy Quarterly Report?", "Provide a bullet point list of the key points mentioned in the Alpha HPA report"]
 
