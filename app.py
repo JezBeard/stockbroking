@@ -42,9 +42,9 @@ def main():
     # Ask a question about the documents in the index
     query = st.text_input("Ask question's about ASX Quarterly Activites Reports :")
 
-    suggestions = ["", "What is the main topic of the document?", "Summarize the document in 200 words?", "Provide a bullet point list of the key points mentioned in the document?", "Create the headings and subheadings for Powerpoint slides", "Translate the first paragraph to French"]
+    suggestions = ["", "Provide an overview of the Morella ASX announcement.", "What are the highlights of the Aurora Energy Quarterly Report?", "Provide a bullet point list of the key points mentioned in the Alpha HPA report", "Create the headings and subheadings for Powerpoint slides", "Translate the first paragraph to French"]
 
-    #suggestion = st.selectbox("Or select a suggestion: (ENSURE QUESTION FIELD ABOVE IS BLANK)", suggestions, index=0)
+    suggestion = st.selectbox("Or select a suggestion: (ENSURE QUESTION FIELD ABOVE IS BLANK)", suggestions, index=0)
 
     if query or suggestion:
         if suggestion:
